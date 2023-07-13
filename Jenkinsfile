@@ -1,28 +1,36 @@
 pipeline {
-    agent { label "dev-server" }
-    stages{
-        stage("Clone Code"){
-            steps{
-                git url: "https://github.com/LondheShubham153/node-todo-cicd.git", branch: "master"
+    agent { label "Dev-agent" }
+    
+    stages {
+        stage("Clone Code") {
+            steps {
+                echo "Cloning the code"
+                git url: "https://github.com/Mehboob1129/node-todo-cicd-with-jenkins.git", branch: "master"
             }
         }
-        stage("Build and Test"){
-            steps{
-                sh "docker build . -t node-app-test-new"
+
+        stage("Building") {
+            steps {
+                echo "Building the image"
+                sh "sudo docker build -t node-todo-cicd-with-jenkins ."
             }
         }
-        stage("Push to Docker Hub"){
-            steps{
-                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker tag node-app-test-new ${env.dockerHubUser}/node-app-test-new:latest"
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker push ${env.dockerHubUser}/node-app-test-new:latest"
+
+        stage("Push to Docker Hub") {
+            steps {
+                echo "Pushing the image to Docker Hub"
+                withCredentials([usernamePassword(credentialsId:"DockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
+                sh "sudo docker tag node-todo-cicd-with-jenkins ${env.dockerHubUser}/node-todo-cicd-with-jenkins:latest"
+                sh "sudo docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                sh "sudo docker push ${env.dockerHubUser}/node-todo-cicd-with-jenkins:latest"
                 }
             }
         }
-        stage("Deploy"){
-            steps{
-                sh "docker-compose down && docker-compose up -d"
+
+        stage("Deploy") {
+            steps {
+                echo "Deploying the container"
+                sh "sudo docker run -d -p 8000:8000 mehboob1129/node-todo-cicd-with-jenkins:latest"
             }
         }
     }
