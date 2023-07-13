@@ -30,7 +30,7 @@ pipeline {
         stage("Deploy") {
             steps {
                 echo "Deploying the container"
-                sh "sudo docker run -d -p 8000:8000 mehboob1129/node-todo-cicd-with-jenkins:latest"
+                sh "sudo docker-compose down && sudo docker-compose up -d"
             }
         }
     }
