@@ -2,6 +2,6 @@ version: '3.9'
 
 services:
   web:
-    image: "mehboob1129/node-todo-cicd-with-jenkins:latest"
+    build: .
     ports:
       - "8000:8000"
